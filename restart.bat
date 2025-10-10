@@ -1,0 +1,6 @@
+@echo off
+echo Stopping any existing Node processes...
+taskkill /f /im node.exe 2>nul
+echo Starting working server...
+node workingServer.js
+pause
