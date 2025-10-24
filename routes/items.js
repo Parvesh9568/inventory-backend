@@ -11,10 +11,11 @@ router.get('/transactions', async (req, res) => {
     const transactions = await Transaction.find()
       .populate('vendor', 'name')
       .populate('item', 'name')
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: 1 });
 
     const formattedTransactions = transactions.map(t => ({
       id: t._id,
+      srNo: t.srNo,
       type: t.type,
       vendor: t.vendor ? t.vendor.name : 'Unknown Vendor',
       item: t.item ? t.item.name : 'Unknown Item',
@@ -46,10 +47,11 @@ router.get('/transactions/:type', async (req, res) => {
     const transactions = await Transaction.find({ type: type.toUpperCase() })
       .populate('vendor', 'name')
       .populate('item', 'name')
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: 1 });
 
     const formattedTransactions = transactions.map(t => ({
       id: t._id,
+      srNo: t.srNo,
       type: t.type,
       vendor: t.vendor ? t.vendor.name : 'Unknown Vendor',
       item: t.item ? t.item.name : 'Unknown Item',
@@ -148,6 +150,7 @@ router.post('/transactions', async (req, res) => {
 
     const formattedTransaction = {
       id: transaction._id,
+      srNo: transaction.srNo,
       type: transaction.type,
       vendor: transaction.vendor ? transaction.vendor.name : 'Unknown Vendor',
       item: transaction.item ? transaction.item.name : 'Unknown Item',
@@ -225,9 +228,10 @@ router.get('/inventory/available', async (req, res) => {
             $sum: {
               $cond: [{ $eq: ['$type', 'IN'] }, '$quantity', 0]
             }
-            
+          }
         }
       },
+      {
         $match: {
           $expr: { $gt: [{ $subtract: ['$totalOut', '$totalIn'] }, 0] }
         }

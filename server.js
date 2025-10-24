@@ -9,6 +9,8 @@ import vendorRoutes from './routes/vendors.js';
 import userRoutes from './routes/users.js';
 import payalPriceChartRoutes from './routes/payalPriceChart.js';
 import paymentRoutes from './routes/payments.js';
+import vendorTransactionRecordRoutes from './routes/vendorTransactionRecords.js';
+import printStatusRoutes from './routes/printStatus.js';
 
 // Load environment variables
 dotenv.config();
@@ -42,6 +44,8 @@ app.use('/api/vendors', vendorRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/payal-price-chart', payalPriceChartRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/vendor-transaction-records', vendorTransactionRecordRoutes);
+app.use('/api/print-status', printStatusRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

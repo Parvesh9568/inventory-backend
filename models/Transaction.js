@@ -1,6 +1,10 @@
 import mongoose from 'mongoose';
 
 const transactionSchema = new mongoose.Schema({
+  srNo: {
+    type: Number,
+    unique: true
+  },
   type: {
     type: String,
     required: true,
@@ -45,6 +49,19 @@ const transactionSchema = new mongoose.Schema({
   }
 }, {
   timestamps: true
+});
+
+// Auto-increment srNo before saving
+transactionSchema.pre('save', async function(next) {
+  if (this.isNew && !this.srNo) {
+    try {
+      const lastTransaction = await this.constructor.findOne({}, {}, { sort: { 'srNo': -1 } });
+      this.srNo = lastTransaction && lastTransaction.srNo ? lastTransaction.srNo + 1 : 1;
+    } catch (error) {
+      return next(error);
+    }
+  }
+  next();
 });
 
 // Virtual for formatted data

@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import Vendor from '../models/Vendor.js';
 import Item from '../models/Item.js';
 import VendorItemPrice from '../models/VendorItemPrice.js';
-import User from '../models/User.js'
+import User from '../models/User.js';
 
 // Connect to MongoDB
 export const connectDatabase = async () => {
