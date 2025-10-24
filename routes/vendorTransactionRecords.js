@@ -11,15 +11,21 @@ const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Create uploads directory if it doesn't exist
-const uploadsDir = path.join(__dirname, '../uploads');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
+// Use /tmp directory for Vercel (serverless environment)
+// Vercel's filesystem is read-only except for /tmp
+const uploadsDir = process.env.VERCEL ? '/tmp/uploads' : path.join(__dirname, '../uploads');
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
+    // Create directory only when needed (lazy creation)
+    if (!fs.existsSync(uploadsDir)) {
+      try {
+        fs.mkdirSync(uploadsDir, { recursive: true });
+      } catch (error) {
+        console.error('Error creating uploads directory:', error);
+      }
+    }
     cb(null, uploadsDir);
   },
   filename: function (req, file, cb) {
