@@ -1,23 +1,15 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
 import { initDatabase } from './config/database.js';
 import itemRoutes from './routes/items.js';
 import vendorRoutes from './routes/vendors.js';
-import userRoutes from './routes/users.js';
 import payalPriceChartRoutes from './routes/payalPriceChart.js';
-import paymentRoutes from './routes/payments.js';
 import vendorTransactionRecordRoutes from './routes/vendorTransactionRecords.js';
 import printStatusRoutes from './routes/printStatus.js';
 
 // Load environment variables
 dotenv.config();
-
-// Get current directory
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 4003;
@@ -41,9 +33,7 @@ app.use((req, res, next) => {
 // Routes
 app.use('/api/items', itemRoutes);
 app.use('/api/vendors', vendorRoutes);
-app.use('/api/users', userRoutes);
 app.use('/api/payal-price-chart', payalPriceChartRoutes);
-app.use('/api/payments', paymentRoutes);
 app.use('/api/vendor-transaction-records', vendorTransactionRecordRoutes);
 app.use('/api/print-status', printStatusRoutes);
 
