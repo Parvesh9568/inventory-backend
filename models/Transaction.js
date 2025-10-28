@@ -51,6 +51,12 @@ const transactionSchema = new mongoose.Schema({
   timestamps: true
 });
 
+// Add indexes for better query performance
+transactionSchema.index({ type: 1, createdAt: 1 }); // For filtering by type and sorting by date
+transactionSchema.index({ vendor: 1 }); // For vendor-specific queries
+transactionSchema.index({ item: 1 }); // For item-specific queries
+transactionSchema.index({ type: 1, vendor: 1, item: 1 }); // Compound index for common queries
+
 // Auto-increment srNo before saving
 transactionSchema.pre('save', async function(next) {
   if (this.isNew && !this.srNo) {

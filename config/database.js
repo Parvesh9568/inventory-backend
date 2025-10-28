@@ -17,14 +17,11 @@ export const connectDatabase = async () => {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-
-    console.log('🍃 Connected to MongoDB successfully');
     
     // Seed initial data
     await seedInitialData();
     
   } catch (error) {
-    console.error('❌ MongoDB connection error:', error.message);
     process.exit(1);
   }
 };
@@ -40,15 +37,10 @@ const seedInitialData = async () => {
     // Check if data already exists
     const existingVendors = await Vendor.countDocuments();
     if (existingVendors > 0) {
-      console.log('📊 Database already contains data, skipping seed');
       return;
     }
 
-    console.log('🌱 Database initialized - no test data seeded');
-    console.log('✅ Database ready for user-created vendors and items');
-
   } catch (error) {
-    console.error('❌ Error seeding data:', error.message);
     throw error;
   }
 };
@@ -57,10 +49,8 @@ const seedInitialData = async () => {
 process.on('SIGINT', async () => {
   try {
     await mongoose.connection.close();
-    console.log('🍃 MongoDB connection closed');
     process.exit(0);
   } catch (error) {
-    console.error('Error closing MongoDB connection:', error);
     process.exit(1);
   }
 });

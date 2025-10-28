@@ -10,8 +10,7 @@ router.get('/transactions', async (req, res) => {
   try {
     const transactions = await Transaction.find()
       .populate('vendor', 'name')
-      .populate('item', 'name')
-      .sort({ createdAt: 1 });
+      .populate('item', 'name');
 
     const formattedTransactions = transactions.map(t => ({
       id: t._id,
@@ -26,8 +25,24 @@ router.get('/transactions', async (req, res) => {
       timestamp: t.createdAt,
       inDate: t.inDate,
       outDate: t.outDate,
-      createdAt: t.createdAt
+      createdAt: t.createdAt,
+      transactionDate: t.inDate || t.outDate || t.createdAt
     }));
+
+    // Sort by transaction date first, then by createdAt time for same-date entries
+    formattedTransactions.sort((a, b) => {
+      // Get date-only strings (YYYY-MM-DD) for comparison
+      const dateOnlyA = new Date(a.transactionDate).toISOString().split('T')[0];
+      const dateOnlyB = new Date(b.transactionDate).toISOString().split('T')[0];
+      
+      // If dates are different, sort by date
+      if (dateOnlyA !== dateOnlyB) {
+        return new Date(dateOnlyA) - new Date(dateOnlyB);
+      }
+      
+      // If dates are same, sort by createdAt time (ascending)
+      return new Date(a.createdAt) - new Date(b.createdAt);
+    });
 
     res.json(formattedTransactions);
   } catch (error) {
@@ -46,8 +61,7 @@ router.get('/transactions/:type', async (req, res) => {
 
     const transactions = await Transaction.find({ type: type.toUpperCase() })
       .populate('vendor', 'name')
-      .populate('item', 'name')
-      .sort({ createdAt: 1 });
+      .populate('item', 'name');
 
     const formattedTransactions = transactions.map(t => ({
       id: t._id,
@@ -62,8 +76,24 @@ router.get('/transactions/:type', async (req, res) => {
       timestamp: t.createdAt,
       inDate: t.inDate,
       outDate: t.outDate,
-      createdAt: t.createdAt
+      createdAt: t.createdAt,
+      transactionDate: t.inDate || t.outDate || t.createdAt
     }));
+
+    // Sort by transaction date first, then by createdAt time for same-date entries
+    formattedTransactions.sort((a, b) => {
+      // Get date-only strings (YYYY-MM-DD) for comparison
+      const dateOnlyA = new Date(a.transactionDate).toISOString().split('T')[0];
+      const dateOnlyB = new Date(b.transactionDate).toISOString().split('T')[0];
+      
+      // If dates are different, sort by date
+      if (dateOnlyA !== dateOnlyB) {
+        return new Date(dateOnlyA) - new Date(dateOnlyB);
+      }
+      
+      // If dates are same, sort by createdAt time (ascending)
+      return new Date(a.createdAt) - new Date(b.createdAt);
+    });
 
     res.json(formattedTransactions);
   } catch (error) {
