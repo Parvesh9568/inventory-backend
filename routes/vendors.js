@@ -290,14 +290,17 @@ router.delete('/:vendorId/wires/:assignmentId', async (req, res) => {
       return res.status(404).json({ error: 'Vendor not found' });
     }
     
-    // Find the wire assignment
-    const wireAssignment = vendor.assignedWires.id(assignmentId);
-    if (!wireAssignment) {
+    // Check if wire assignment exists
+    const wireExists = vendor.assignedWires.some(
+      wire => wire._id.toString() === assignmentId
+    );
+    
+    if (!wireExists) {
       return res.status(404).json({ error: 'Wire assignment not found' });
     }
     
-    // Remove the wire assignment
-    wireAssignment.remove();
+    // Remove the wire assignment using pull (Mongoose method)
+    vendor.assignedWires.pull(assignmentId);
     await vendor.save();
     
     res.json({ 
