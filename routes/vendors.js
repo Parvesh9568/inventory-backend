@@ -299,6 +299,42 @@ router.delete('/:vendorId/wires/:assignmentId', async (req, res) => {
   }
 });
 
+// Update vendor details
+router.put('/:vendorId', async (req, res) => {
+  try {
+    const { vendorId } = req.params;
+    const { name, phone, address } = req.body;
+    
+    // Check if vendor exists
+    const vendor = await Vendor.findById(vendorId);
+    if (!vendor) {
+      return res.status(404).json({ error: 'Vendor not found' });
+    }
+
+    // If name is being changed, check if new name already exists
+    if (name && name !== vendor.name) {
+      const existingVendor = await Vendor.findOne({ name });
+      if (existingVendor) {
+        return res.status(400).json({ error: 'A vendor with this name already exists' });
+      }
+      vendor.name = name;
+    }
+
+    // Update phone and address if provided
+    if (phone !== undefined) vendor.phone = phone;
+    if (address !== undefined) vendor.address = address;
+
+    await vendor.save();
+    
+    res.json({ 
+      message: `Vendor updated successfully`,
+      vendor
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Delete vendor
 router.delete('/:vendorId', async (req, res) => {
   try {
