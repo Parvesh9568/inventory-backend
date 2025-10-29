@@ -290,11 +290,22 @@ router.delete('/:vendorId/wires/:assignmentId', async (req, res) => {
       return res.status(404).json({ error: 'Vendor not found' });
     }
     
-    vendor.assignedWires.id(assignmentId).remove();
+    // Find the wire assignment
+    const wireAssignment = vendor.assignedWires.id(assignmentId);
+    if (!wireAssignment) {
+      return res.status(404).json({ error: 'Wire assignment not found' });
+    }
+    
+    // Remove the wire assignment
+    wireAssignment.remove();
     await vendor.save();
     
-    res.json(vendor);
+    res.json({ 
+      message: 'Wire assignment removed successfully',
+      vendor 
+    });
   } catch (error) {
+    console.error('Error removing wire assignment:', error);
     res.status(500).json({ error: error.message });
   }
 });
